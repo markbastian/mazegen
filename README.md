@@ -1,4 +1,4 @@
-# conway
+# mazegen
 
 An implementation of maze generation algorithms in Clojure.
 
