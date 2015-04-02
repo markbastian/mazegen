@@ -3,18 +3,28 @@
 ;http://en.wikipedia.org/wiki/Maze_generation_algorithm
 ;http://en.wikipedia.org/wiki/Prim%27s_algorithm
 
-(defn neighbors [[i j]]
-  (let [x ((juxt inc identity dec identity) i)
-        y ((juxt identity inc identity dec) j)]
-    (map vector x y)))
+(defn neighbors
+  "Compute the neighbors of a given coordinate."
+  [[i j]]
+  (map vector
+       ((juxt inc identity dec identity) i)
+       ((juxt identity inc identity dec) j)))
 
-(defn prim-gen [w h]
-  (loop [halls { [0 0] #{} } walls (neighbors [0 0]) locked {}]
-    (if true
-      3
-      (recur {} {} {}))))
+(defn valid [[i j] [w h]] (and (<= 0 i (dec w)) (<= 0 j (dec h))))
 
-(defn gen-cell[](if (> (Math/random) 0.7) :alive :dead))
+(defn expand [start current w h]
+  (let [valid-neighbors (filter #(valid % [w h]) (neighbors start))]
+    (into current (map vector (repeat start) valid-neighbors))))
 
-(defn seed-grid [rows cols]
-  (vec (take rows (repeatedly (fn [] (vec (take cols (repeatedly gen-cell))))))))
+(defn prim-gen [start w h]
+  (loop [maze { start [] } frontier (expand start [] w h)]
+    (if (empty? frontier)
+      maze
+      (let [[k v] (rand-nth frontier)
+            new-maze (into (update-in maze [k] conj v) { v []})
+            visited (into #{} (keys new-maze))]
+        (recur new-maze (vec (filter #(not (visited (second %))) (expand v frontier w h))))))))
+
+(def maze (prim-gen [0 0] 100 100))
+;;Now, we just need to render. For every cell, you track the input side (always open) and the exits (also open).
+;;Everything else is a line.
