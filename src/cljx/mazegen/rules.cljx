@@ -10,21 +10,39 @@
        ((juxt inc identity dec identity) i)
        ((juxt identity inc identity dec) j)))
 
-(defn valid [[i j] [w h]] (and (<= 0 i (dec w)) (<= 0 j (dec h))))
+(defn in-maze? [[i j] maze]
+  (and (<= 0 i (dec (count maze))) (<= 0 j (dec (count (maze i))))))
 
-(defn expand [start current w h]
-  (let [valid-neighbors (filter #(valid % [w h]) (neighbors start))]
-    (into current (map vector (repeat start) valid-neighbors))))
+(defn neighbors-on-board [start maze]
+  (filter #(in-maze? % maze) (neighbors start)))
+
+(defn categorized-neighbors [start maze]
+  (let [n (neighbors-on-board start maze)]
+    (group-by #(nil? (get-in maze %)) n)))
+
+(defn init [rows cols]
+  (vec (take rows (repeat (vec (take cols (repeat nil)))))))
+
+(defn open-wall [src dst maze]
+  (case (map - dst src)
+    [1 0] (assoc-in (update-in maze src conj :down) dst #{ :up })
+    [-1 0] (assoc-in (update-in maze src conj :up) dst #{ :down })
+    [0 1] (assoc-in (update-in maze src conj :right) dst #{ :left })
+    [0 -1] (assoc-in (update-in maze src conj :left) dst #{ :right })))
 
 (defn prim-gen [start w h]
-  (loop [maze { start [] } frontier (expand start [] w h)]
+  (loop [maze (assoc-in (init w h) start #{})
+         frontier (into #{} (neighbors-on-board start maze))]
     (if (empty? frontier)
       maze
-      (let [[k v] (rand-nth frontier)
-            new-maze (into (update-in maze [k] conj v) { v []})
-            visited (into #{} (keys new-maze))]
-        (recur new-maze (vec (filter #(not (visited (second %))) (expand v frontier w h))))))))
+      (let [dst (rand-nth (vec frontier))
+            { frontier-additions true potential-sources false }
+            (categorized-neighbors dst maze)
+            src (rand-nth potential-sources)]
+        (recur (open-wall src dst maze)
+               (into (disj frontier dst) frontier-additions))))))
 
-(def maze (prim-gen [0 0] 100 100))
-;;Now, we just need to render. For every cell, you track the input side (always open) and the exits (also open).
-;;Everything else is a line.
+;(def dim 10)
+;(def maze (prim-gen [0 0] dim dim))
+
+;(doseq [i (range dim)] (prn (maze i)))

@@ -1,6 +1,6 @@
 (ns mazegen.core-test
   (:require [clojure.test :refer :all]
-            [mazegen.swingui :refer :all]))
+            [mazegen.rules :refer :all]))
 
 (deftest a-test
   (testing "pass."
