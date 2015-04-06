@@ -5,14 +5,14 @@
 
 (defn neighbors
   "Compute the neighbors of a given coordinate."
-  [[i j]]
-  (map vector
-       ((juxt inc identity dec identity) i)
-       ((juxt identity inc identity dec) j)))
+  [maze [i j]]
+  (->> (map vector
+            ((juxt inc identity dec identity) i)
+            ((juxt identity inc identity dec) j))
+       (filter #(get-in maze %))))
 
 (defn categorized-neighbors [start maze]
-  (->> start neighbors
-       (filter #(get-in maze %))
+  (->> start (neighbors maze)
        (group-by #(empty? (get-in maze %)))))
 
 (defn init [rows cols]
@@ -25,7 +25,7 @@
 
 (defn prim-gen [start rows cols]
   (loop [maze (update-in (init rows cols) start conj :start)
-         frontier (into #{} (filter #(get-in maze %) (neighbors start)))]
+         frontier (into #{} (neighbors maze start))]
     (if (empty? frontier)
       maze
       (let [dst (rand-nth (vec frontier))
