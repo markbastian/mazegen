@@ -6378,7 +6378,7 @@ if (w(w(hf) ? document.getElementById : hf)) {
   var vf = document.getElementById("mazeCanvas"), wf = vf.getContext("2d");
   wf.beginPath();
   a: {
-    var xf = lf, yf = vf.width / R(xf), Af = vf.height / R(xf.c ? xf.c(0) : xf.call(null, 0));
+    var xf = lf, yf = vf.width / R(xf.c ? xf.c(0) : xf.call(null, 0)), Af = vf.height / R(xf);
     wf.fillStyle = "#FFFFFF";
     wf.fillRect(0, 0, vf.width, vf.height);
     wf.fillStyle = "#000000";
