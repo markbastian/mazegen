@@ -10,15 +10,16 @@
        ((juxt inc identity dec identity) i)
        ((juxt identity inc identity dec) j)))
 
-(defn in-maze? [[i j] maze]
-  (and (<= 0 i (dec (count maze))) (<= 0 j (dec (count (maze i))))))
+(defn in-maze? [[r c] maze]
+  (and (<= 0 r (dec (count maze))) (<= 0 c (dec (count (maze r))))))
 
 (defn neighbors-on-board [start maze]
   (filter #(in-maze? % maze) (neighbors start)))
 
 (defn categorized-neighbors [start maze]
-  (let [n (neighbors-on-board start maze)]
-    (group-by #(nil? (get-in maze %)) n)))
+  (let [n (neighbors-on-board start maze)
+        g (group-by #(nil? (get-in maze %)) n)]
+    [(g true) (g false)]))
 
 (defn init [rows cols]
   (vec (take rows (repeat (vec (take cols (repeat nil)))))))
@@ -30,19 +31,12 @@
     [0 1] (assoc-in (update-in maze src conj :right) dst #{ :left })
     [0 -1] (assoc-in (update-in maze src conj :left) dst #{ :right })))
 
-(defn prim-gen [start w h]
-  (loop [maze (assoc-in (init w h) start #{})
+(defn prim-gen [start rows cols]
+  (loop [maze (assoc-in (init rows cols) start #{})
          frontier (into #{} (neighbors-on-board start maze))]
     (if (empty? frontier)
       maze
       (let [dst (rand-nth (vec frontier))
-            { frontier-additions true potential-sources false }
-            (categorized-neighbors dst maze)
-            src (rand-nth potential-sources)]
-        (recur (open-wall src dst maze)
+            [frontier-additions potential-sources] (categorized-neighbors dst maze)]
+        (recur (open-wall (rand-nth potential-sources) dst maze)
                (into (disj frontier dst) frontier-additions))))))
-
-;(def dim 10)
-;(def maze (prim-gen [0 0] dim dim))
-
-;(doseq [i (range dim)] (prn (maze i)))
