@@ -8,10 +8,10 @@
 
 (defn draw-cell [ctx sx sy dx dy cell]
   (do
-    (when-not (cell :left) (doto ctx (.moveTo sx sy) (.lineTo sx (+ sy dy))))
-    (when-not (cell :right) (doto ctx (.moveTo (+ sx dx) sy) (.lineTo (+ sx dx) (+ sy dy))))
-    (when-not (cell :up) (doto ctx (.moveTo sx sy) (.lineTo (+ sx dx) sy)))
-    (when-not (cell :down) (doto ctx (.moveTo sx (+ sy dy)) (.lineTo (+ sx dx) (+ sy dy))))))
+    (when-not (cell [0 -1]) (doto ctx (.moveTo sx sy) (.lineTo sx (+ sy dy))))
+    (when-not (cell [0 1]) (doto ctx (.moveTo (+ sx dx) sy) (.lineTo (+ sx dx) (+ sy dy))))
+    (when-not (cell [-1 0]) (doto ctx (.moveTo sx sy) (.lineTo (+ sx dx) sy)))
+    (when-not (cell [1 0]) (doto ctx (.moveTo sx (+ sy dy)) (.lineTo (+ sx dx) (+ sy dy))))))
 
 (defn draw-maze [ctx canvas maze]
   (let [dx (/ (.-width canvas) (count (maze 0)))

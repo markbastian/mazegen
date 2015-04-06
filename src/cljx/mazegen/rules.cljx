@@ -19,11 +19,9 @@
   (vec (take rows (repeat (vec (take cols (repeat #{})))))))
 
 (defn open-wall [src dst maze]
-  (case (map - dst src)
-    [1 0] (assoc-in (update-in maze src conj :down) dst #{ :up })
-    [-1 0] (assoc-in (update-in maze src conj :up) dst #{ :down })
-    [0 1] (assoc-in (update-in maze src conj :right) dst #{ :left })
-    [0 -1] (assoc-in (update-in maze src conj :left) dst #{ :right })))
+  (-> maze
+      (update-in src conj (map - dst src))
+      (update-in dst conj (map - src dst))))
 
 (defn prim-gen [start rows cols]
   (loop [maze (update-in (init rows cols) start conj :start)
