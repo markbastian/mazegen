@@ -27,7 +27,8 @@
   (.-onload js/window)
   (when (and js/document (.-getElementById js/document))
     (let [cells 20
-          maze (rules/prim-gen [0 0] cells cells)
+          ;maze (rules/prim-gen [0 0] cells cells)
+          maze (rules/dfs [0 0] cells cells)
           canvas (.getElementById js/document "mazeCanvas")
           ctx (.getContext canvas "2d")]
       (doto ctx

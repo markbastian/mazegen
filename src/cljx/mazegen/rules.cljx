@@ -33,4 +33,16 @@
         (recur (open-wall (rand-nth s) dst maze)
                (into (disj frontier dst) f))))))
 
+(defn dfs [start rows cols]
+  (loop [maze (update-in (init rows cols) start conj :start) visited [start]]
+    (if (empty? visited)
+      maze
+      (let [f (filter #(empty? (get-in maze %)) (neighbors maze (first visited)))]
+        (if (empty? f)
+          (recur maze (rest visited))
+          (let [dst (rand-nth (vec f))]
+            (recur (open-wall (first visited) dst maze) (conj visited dst))))))))
+
 ;(prn (prim-gen [0 0] 4 4))
+
+;(prn (dfs [0 0] 4 4))
