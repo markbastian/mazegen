@@ -12,10 +12,9 @@
        (filter #(get-in maze %))))
 
 (defn categorized-neighbors [start maze]
-  (->> start (neighbors maze)
-       (group-by #(empty? (get-in maze %)))))
+  (->> start (neighbors maze) (group-by #(empty? (get-in maze %)))))
 
-(defn init [rows cols]
+(defn create-empty [rows cols]
   (vec (take rows (repeat (vec (take cols (repeat #{})))))))
 
 (defn open-wall [src dst maze]
@@ -23,8 +22,8 @@
       (update-in src conj (map - dst src))
       (update-in dst conj (map - src dst))))
 
-(defn prim-gen [start rows cols]
-  (loop [maze (update-in (init rows cols) start conj :start)
+(defn prim-gen [maze start]
+  (loop [maze (update-in maze start conj :start)
          frontier (into #{} (neighbors maze start))]
     (if (empty? frontier)
       maze
@@ -33,15 +32,20 @@
         (recur (open-wall (rand-nth s) dst maze)
                (into (disj frontier dst) f))))))
 
-(defn dfs [start rows cols]
-  (loop [maze (update-in (init rows cols) start conj :start) visited [start]]
+(defn dfs [maze start]
+  (loop [maze (update-in maze start conj :start)
+         visited [start]]
     (if (empty? visited)
       maze
-      (let [f (filter #(empty? (get-in maze %)) (neighbors maze (first visited)))]
+      (let [n (neighbors maze (first visited))
+            f (filter #(empty? (get-in maze %)) n)]
         (if (empty? f)
           (recur maze (rest visited))
           (let [dst (rand-nth (vec f))]
             (recur (open-wall (first visited) dst maze) (conj visited dst))))))))
+
+(def m (prim-gen (create-empty 4 4) [0 0]))
+(def n (dfs (create-empty 4 4) [0 0]))
 
 ;(prn (prim-gen [0 0] 4 4))
 
