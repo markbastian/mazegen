@@ -62,4 +62,4 @@
 (defn -main [& args]
   (launch JFrame/EXIT_ON_CLOSE))
 
-(launch JFrame/DISPOSE_ON_CLOSE)
+;(launch JFrame/DISPOSE_ON_CLOSE)
