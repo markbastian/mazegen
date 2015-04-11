@@ -11,7 +11,7 @@
         sy (* dy row)
         cell (get-in maze [row col])]
     (do
-      (when (cell :start)
+      (when (or (cell :start) (cell :end))
         (.append p (Ellipse2D$Double. sx sy dx dy) false))
       (when-not (cell [row (dec col)])
         (doto p (.moveTo sx sy) (.lineTo sx (+ sy dy))))
@@ -40,8 +40,10 @@
 
 (defn launch [exit-behavior]
   (let [cells 20
+        start [0 0]
+        end [(dec cells) (dec cells)]
         empty-maze (rules/create-empty cells cells)
-        maze (atom (rules/prim-gen empty-maze [0 0]))]
+        maze (atom (rules/prim-gen empty-maze start end))]
     (doto (JFrame. "Maze Generator")
       (.setSize 800 600)
       (.setDefaultCloseOperation exit-behavior)
@@ -50,14 +52,14 @@
               (.add (doto (JButton. "Generate Prim")
                       (.addActionListener
                         (reify ActionListener (actionPerformed [_ _]
-                                                (reset! maze (rules/prim-gen empty-maze [0 0])))))))
+                                                (reset! maze (rules/prim-gen empty-maze start end)))))))
               (.add (doto (JButton. "Generate Recursive Backtracking")
                       (.addActionListener
                         (reify ActionListener (actionPerformed [_ _]
-                                                (reset! maze (rules/depth-first-gen empty-maze [0 0])))))))) BorderLayout/SOUTH)
+                                                (reset! maze (rules/depth-first-gen empty-maze start end)))))))) BorderLayout/SOUTH)
       (.setVisible true))))
 
 (defn -main [& args]
   (launch JFrame/EXIT_ON_CLOSE))
 
-;(launch JFrame/DISPOSE_ON_CLOSE)
+(launch JFrame/DISPOSE_ON_CLOSE)

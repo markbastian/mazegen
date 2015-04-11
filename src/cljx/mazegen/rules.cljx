@@ -22,11 +22,11 @@
 
 (defn prim-gen
   "Create a maze using Prim's method."
-  [empty-maze start]
+  [empty-maze start end]
   (loop [maze (update-in empty-maze start conj :start)
          frontier (into #{} (neighbors maze start))]
     (if (empty? frontier)
-      maze
+      (update-in maze end conj :end)
       (let [dst (rand-nth (vec frontier))
             n (neighbors maze dst)
             { f true s false } (group-by #(empty? (get-in maze %)) n)]
@@ -35,11 +35,11 @@
 
 (defn depth-first-gen
   "Create a maze using a depth-first recursive search with backtracking."
-  [empty-maze start]
+  [empty-maze start end]
   (loop [maze (update-in empty-maze start conj :start)
          visited [start]]
     (if (empty? visited)
-      maze
+      (update-in maze end conj :end)
       (let [n (neighbors maze (first visited))
             f (filter #(empty? (get-in maze %)) n)]
         (if (empty? f)
