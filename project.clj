@@ -6,7 +6,7 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.6.0"]
                  [org.clojure/clojurescript "0.0-3126"]]
-  ;:main ^:skip-aot mazegen.swingui
+  :main mazegen.swingui
   ;:auto-clean false
   :jar-exclusions [#"\.cljx|\.swp|\.swo|\.DS_Store"]
   :profiles {:uberjar {:aot :all}
