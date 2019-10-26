@@ -1,4 +1,4 @@
-(ns mazegen.rules)
+(ns mazegen.core)
 
 (defn create-empty
   "Create an empty rectangular maze."

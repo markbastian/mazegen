@@ -1,8 +1,8 @@
 (ns mazegen.swingui
   (:gen-class)
-  (:require [mazegen.rules :as rules])
+  (:require [mazegen.core :as maze])
   (:import (javax.swing JFrame JPanel JButton BoxLayout Box)
-           (java.awt BorderLayout Graphics2D Color ImageCapabilities)
+           (java.awt BorderLayout Graphics2D Color)
            (java.awt.geom Rectangle2D$Double Path2D$Double Ellipse2D$Double)
            (java.awt.event ActionListener)))
 
@@ -22,10 +22,10 @@
       (when-not (cell [(inc row) col])
         (doto p (.moveTo sx (+ sy dy)) (.lineTo (+ sx dx) (+ sy dy)))))))
 
-(defn panel [maze]
+(defn ^JPanel panel [maze]
   (doto
     (proxy [JPanel] []
-    (paint [g2d]
+    (paint [^Graphics2D g2d]
       (let [dx (/ (.getWidth this) (count (@maze 0)))
             dy (/ (.getHeight this) (count @maze))]
         (doto g2d
@@ -42,8 +42,8 @@
   (let [cells 20
         start [0 0]
         end [(dec cells) (dec cells)]
-        empty-maze (rules/create-empty cells cells)
-        maze (atom (rules/prim-gen empty-maze start end))]
+        empty-maze (maze/create-empty cells cells)
+        maze (atom (maze/prim-gen empty-maze start end))]
     (doto (JFrame. "Maze Generator")
       (.setSize 800 600)
       (.setDefaultCloseOperation exit-behavior)
@@ -52,11 +52,11 @@
               (.add (doto (JButton. "Generate Prim")
                       (.addActionListener
                         (reify ActionListener (actionPerformed [_ _]
-                                                (reset! maze (rules/prim-gen empty-maze start end)))))))
+                                                (reset! maze (maze/prim-gen empty-maze start end)))))))
               (.add (doto (JButton. "Generate Recursive Backtracking")
                       (.addActionListener
                         (reify ActionListener (actionPerformed [_ _]
-                                                (reset! maze (rules/depth-first-gen empty-maze start end)))))))) BorderLayout/SOUTH)
+                                                (reset! maze (maze/depth-first-gen empty-maze start end)))))))) BorderLayout/SOUTH)
       (.setVisible true))))
 
 (defn -main [& args]

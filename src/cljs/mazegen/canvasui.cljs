@@ -1,5 +1,5 @@
 (ns mazegen.canvasui
-  (:require [mazegen.rules :as rules]))
+  (:require [mazegen.core :as maze]))
 
 (defn draw-cell [ctx dx dy row col maze]
   (let [sx (* dx col)
@@ -39,14 +39,14 @@
     (let [cells 20
           start [0 0]
           end [(dec cells) (dec cells)]
-          empty-maze (rules/create-empty cells cells)
+          empty-maze (maze/create-empty cells cells)
           prim-canvas (.getElementById js/document "primCanvas")
           dfb-canvas (.getElementById js/document "dfbCanvas")
           reset-button (.getElementById js/document "regenMazes")]
       (do
-        (draw-maze prim-canvas (rules/prim-gen empty-maze start end))
-        (draw-maze dfb-canvas (rules/depth-first-gen empty-maze start end))
+        (draw-maze prim-canvas (maze/prim-gen empty-maze start end))
+        (draw-maze dfb-canvas (maze/depth-first-gen empty-maze start end))
         (set! (.-onclick reset-button)
               #(do
-                (draw-maze prim-canvas (rules/prim-gen empty-maze start end))
-                (draw-maze dfb-canvas (rules/depth-first-gen empty-maze start end))))))))
+                 (draw-maze prim-canvas (maze/prim-gen empty-maze start end))
+                 (draw-maze dfb-canvas (maze/depth-first-gen empty-maze start end))))))))
