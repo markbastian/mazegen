@@ -1,37 +1,23 @@
 (defproject mazegen "0.1.0-SNAPSHOT"
-  :offline :true
   :description "A project for generating mazes."
-  :url "http://example.com/FIXME"
+  :url "https://github.com/markbastian/mazegen"
   :license {:name "Eclipse Public License"
-            :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :dependencies [[org.clojure/clojure "1.6.0"]
-                 [org.clojure/clojurescript "0.0-3126"]]
+            :url  "http://www.eclipse.org/legal/epl-v10.html"}
+  :dependencies [[org.clojure/clojure "1.10.1"]
+                 [org.clojure/clojurescript "1.10.520"]]
+
   :main mazegen.swingui
-  ;:auto-clean false
-  :jar-exclusions [#"\.cljx|\.swp|\.swo|\.DS_Store"]
-  :profiles {:uberjar {:aot :all}
-             :dev {:plugins [[com.keminglabs/cljx "0.6.0"]
-                             [lein-cljsbuild "1.0.5"]
-                             [org.clojure/clojurescript "0.0-3126"]]}
-             :cljs {:plugins [[lein-cljsbuild "1.0.5"]] }}
 
-  :prep-tasks [["cljx" "once"] "javac" "compile"]
+  :jar-exclusions [#"\.swp|\.swo|\.DS_Store"]
+  :profiles {:uberjar {:aot [mazegen.swingui]}
+             :dev     {:plugins [[lein-cljsbuild "1.1.7"]
+                                 [org.clojure/clojurescript "1.10.520"]]}
+             :cljs    {:plugins [[lein-cljsbuild "1.1.7"]]}}
 
-  :source-paths ["src/clj"]
+  :source-paths ["src/clj" "src/cljc" "test"]
 
-  :aliases {"cleantest" ["do" "clean," "cljx" "once," "test," "cljsbuild" "test"]}
-
-  :clj {:builds [{ :source-paths ["src/clj" "target/classes" "target/test-classes"] }]}
-
-  :cljsbuild {:builds [{ :source-paths ["src/cljs" "target/classes"]
-                        :compiler { :output-to "resources/public/js/mazegen.js"
-                                   :optimizations :advanced
-                                   :pretty-print true}}]}
-
-  :cljx {:builds [{:source-paths ["src/cljx"]
-                   :output-path "target/classes"
-                   :rules :clj}
-
-                  {:source-paths ["src/cljx"]
-                   :output-path "target/classes"
-                   :rules :cljs}]})
+  :cljsbuild {:builds [{:source-paths ["src/cljs" "src/cljc"]
+                        :compiler     {:main          mazegen.canvasui
+                                       :output-to     "resources/public/js/mazegen.js"
+                                       :optimizations :advanced
+                                       :pretty-print  true}}]})
