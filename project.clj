@@ -20,4 +20,7 @@
                         :compiler     {:main          mazegen.canvasui
                                        :output-to     "resources/public/js/mazegen.js"
                                        :optimizations :advanced
-                                       :pretty-print  true}}]})
+                                       :pretty-print  true}}]}
+
+  :repositories [["releases" {:url "https://repo.clojars.org" :creds :gpg}]
+                 ["snapshots" {:url "https://repo.clojars.org" :creds :gpg}]])
